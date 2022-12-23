@@ -241,22 +241,23 @@ class ImageNetValidation(ImageNetBase):
                 with tarfile.open(path, "r:") as tar:
                     tar.extractall(path=datadir)
 
-                vspath = os.path.join(self.root, self.FILES[1])
-                if not os.path.exists(vspath) or not os.path.getsize(vspath)==self.SIZES[1]:
-                    download(self.VS_URL, vspath)
+            vspath = os.path.join(self.root, self.FILES[1])
+            print("SYN SET PATH: {}".format(vspath))
+            if not os.path.exists(vspath) or not os.path.getsize(vspath)==self.SIZES[1]:
+                download(self.VS_URL, vspath)
 
-                with open(vspath, "r") as f:
-                    synset_dict = f.read().splitlines()
-                    synset_dict = dict(line.split() for line in synset_dict)
+            with open(vspath, "r") as f:
+                synset_dict = f.read().splitlines()
+                synset_dict = dict(line.split() for line in synset_dict)
 
-                print("Reorganizing into synset folders")
-                synsets = np.unique(list(synset_dict.values()))
-                for s in synsets:
-                    os.makedirs(os.path.join(datadir, s), exist_ok=True)
-                for k, v in synset_dict.items():
-                    src = os.path.join(datadir, k)
-                    dst = os.path.join(datadir, v)
-                    shutil.move(src, dst)
+            print("Reorganizing into synset folders")
+            synsets = np.unique(list(synset_dict.values()))
+            for s in synsets:
+                os.makedirs(os.path.join(datadir, s), exist_ok=True)
+            for k, v in synset_dict.items():
+                src = os.path.join(datadir, k)
+                dst = os.path.join(datadir, v)
+                shutil.move(src, dst)
 
             filelist = glob.glob(os.path.join(datadir, "**", "*.JPEG"))
             filelist = [os.path.relpath(p, start=datadir) for p in filelist]
