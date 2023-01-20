@@ -20,6 +20,7 @@ from pytorch_lightning.utilities import rank_zero_info
 from ldm.data.base import Txt2ImgIterableBaseDataset
 from ldm.util import instantiate_from_config
 
+import ldm
 from IPython import embed
 
 
@@ -576,6 +577,7 @@ if __name__ == "__main__":
                 "filename": "{epoch:06}",
                 "verbose": True,
                 "save_last": True,
+                "every_n_train_steps": 3000,
             }
         }
         if hasattr(model, "monitor"):
