@@ -77,10 +77,12 @@ data:
     train:
       target: ldm.data.folder.FolderTrain
       params:
+        root: /data/pascal_5_3_train
         size: 128
     validation:
       target: ldm.data.folder.FolderVal
       params:
+        root: /data/pascal_5_3_val
         size: 128
 
 
