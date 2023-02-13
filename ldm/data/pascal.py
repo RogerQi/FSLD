@@ -58,6 +58,8 @@ class PascalBase(Dataset):
             # Map name to indices
             class_idx_list = [name_list.index(n) for n in class_name_list]
             self.class_map[c] = class_idx_list
+        
+        assert size is not None, "size cutting in __getitem__ requires size to be not None"
 
         self.size = size
         self.interpolation = {"bilinear": PIL.Image.Resampling.BILINEAR,

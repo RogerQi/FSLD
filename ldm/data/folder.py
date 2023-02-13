@@ -8,6 +8,7 @@ from torchvision import transforms
 
 class FolderReaderBase(Dataset):
     def __init__(self, root=None, size=128, interpolation='bicubic', SCALING=10):
+        assert root is not None
         self.root = root
         # Read files
         class_idx_list = os.listdir(root)
@@ -18,8 +19,9 @@ class FolderReaderBase(Dataset):
             cls_dir = os.path.join(self.root, cls_str)
             img_file_list = os.listdir(cls_dir)
             for img_fn in img_file_list:
-                self.img_path_list.append(os.path.join(cls_dir, img_fn))
-                self.label_list.append(int(cls_str))
+                if img_fn.endswith('.jpg'):
+                    self.img_path_list.append(os.path.join(cls_dir, img_fn))
+                    self.label_list.append(int(cls_str))
         
         assert size is not None, "size cutting in __getitem__ requires size to be not None"
 
@@ -48,12 +50,22 @@ class FolderReaderBase(Dataset):
         if not img.mode == 'RGB':
             img = img.convert('RGB')
 
-        # Use score-sde preprocessing like LSUN in original latent diffusion
         img = np.array(img).astype(np.uint8)
-#         crop = min(img.shape[0], img.shape[1])
-#         h, w, = img.shape[0], img.shape[1]
-#         img = img[(h - crop) // 2:(h + crop) // 2,
-#               (w - crop) // 2:(w + crop) // 2]
+
+        # Pad to square by longer edge
+        if example['class_label'] != 0:
+            if np.random.random() < 1:
+                h, w = img.shape[0], img.shape[1]
+                if h > w:
+                    img = np.pad(img, ((0, 0), ((h - w) // 2, (h - w) // 2), (0, 0)), 'constant')
+                elif w > h:
+                    img = np.pad(img, (((w - h) // 2, (w - h) // 2), (0, 0), (0, 0)), 'constant')
+
+        # Crop to the shorter edge
+        # crop = min(img.shape[0], img.shape[1])
+        # h, w, = img.shape[0], img.shape[1]
+        # img = img[(h - crop) // 2:(h + crop) // 2,
+        #       (w - crop) // 2:(w + crop) // 2]
 
         image = Image.fromarray(img)
         if self.size is not None:
@@ -67,8 +79,8 @@ class FolderReaderBase(Dataset):
 
 class FolderTrain(FolderReaderBase):
     def __init__(self, **kwargs):
-        super().__init__(root='/data/pascal_composition_train', **kwargs)
+        super().__init__(**kwargs)
 
 class FolderVal(FolderReaderBase):
     def __init__(self, **kwargs):
-        super().__init__(root='/data/pascal_composition_val', **kwargs)
+        super().__init__(**kwargs)

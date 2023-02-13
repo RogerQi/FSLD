@@ -10,7 +10,7 @@ model:
     timesteps: 1000
     first_stage_key: image
     cond_stage_key: class_label
-    image_size: 32
+    image_size: 64
     channels: 3
     cond_stage_trainable: true
     conditioning_key: crossattn
@@ -20,7 +20,7 @@ model:
     unet_config:
       target: ldm.modules.diffusionmodules.openaimodel.UNetModel
       params:
-        image_size: 32
+        image_size: 64
         in_channels: 3
         out_channels: 3
         model_channels: 192
@@ -47,7 +47,7 @@ model:
         ddconfig:
           double_z: false
           z_channels: 3
-          resolution: 128
+          resolution: 256
           in_channels: 3
           out_ch: 3
           ch: 128
@@ -71,17 +71,17 @@ model:
 data:
   target: main.DataModuleFromConfig
   params:
-    batch_size: 64
+    batch_size: 32
     num_workers: 12
     wrap: false
     train:
       target: ldm.data.folder.FolderTrain
       params:
-        size: 128
+        size: 256
     validation:
       target: ldm.data.folder.FolderVal
       params:
-        size: 128
+        size: 256
 
 
 lightning:
